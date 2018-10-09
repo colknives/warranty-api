@@ -20,8 +20,7 @@
     "autoload": {
         "classmap": [
             "database/seeds",
-            "database/factories",
-            "vendor/zohocrm/php-sdk/src/com/zoho/crm/library/setup/restclient"
+            "database/factories"
         ],
         "psr-4": {
             "App\\": "app/"

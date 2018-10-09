@@ -83,30 +83,6 @@ class WarrantyController extends Controller
 
         $productDetailList = [];
 
-        foreach ($request->get('product_details') as $key => $productDetail) {
-
-            $productApplied = [];
-
-            if( isset($productDetail['dura_fabric']) ){
-                $productApplied[] = $productDetail['dura_fabric'];
-            }
-
-            if( isset($productDetail['dura_leather']) ){
-                $productApplied[] = $productDetail['dura_leather'];
-            }
-
-            if( isset($productDetail['dura_paint']) ){
-                $productApplied[] = $productDetail['dura_paint'];
-            }
-
-            $productDetailList[] = [
-                '@type' => 'Product Registered',
-                'Serial Number' => $productDetail['serial_number'],
-                'Product Number' => '234234',
-                'Product Applied' => implode(',', $productApplied)        
-            ];
-        }
-
         $data[] = [
             'Warranty Claim Number' => rand(10000000, 99999999),
             'Status' => 'Pending',
@@ -122,8 +98,13 @@ class WarrantyController extends Controller
             'Suburb/Town/Province' => $request->get('suburb'),
             'Zip Code' => $request->get('postcode'),
             'Country' => 'New Zealand',
+            'Serial Number' => $request->get('serial_number'),
+            'Purchase Date' => $request->get('purchase_date'),
+            'Product Type' => '0',
+            'Product Applied' => '0',
             'Email Opt Out' => $request->get('subscribe'),
-            'Product Registered' => $productDetailList
+            'Dealer Name' => $request->get('dealer_name'),
+            'Dealer Address' => $request->get('dealer_location'),
         ];
 
         $create = $this->warranty->save($data);
