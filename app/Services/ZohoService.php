@@ -135,15 +135,15 @@ class ZohoService
         ->triggerWorkflow()
         ->request();
 
-        $error = true;
+        $success = true;
 
         foreach ($records as $record) {
             if( !$record->isInserted() ){
-                $error = false;
+                $success = false;
             }
         }
 
-        if( $error ){
+        if( $success ){
             return (object)[
                 "status" => 200,
                 "message" => __("messages.{$this->moduleName}.create.200"),
@@ -153,7 +153,7 @@ class ZohoService
 
         return (object)[
             "status" => 404,
-            "message" => null,
+            "message" => __("messages.{$this->moduleName}.create.404"),
             "model" => null
         ];
     }

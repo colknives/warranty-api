@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\WarrantyService;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class WarrantyController extends Controller
 {
@@ -18,10 +19,12 @@ class WarrantyController extends Controller
         "suburb" => "required",
         "city" => "required",
         "postcode" => "required",
-        "product_details" => "required",
+        "serial_number" => "required",
+        "purchase_date" => "required",
+        "product_type" => "required",
+        "product_applied" => "required",
         "dealer_name" => "required",
-        "dealer_location" => "required",
-        "subscribe" => "required",
+        "dealer_location" => "required"
     ];
 
     const CREATE_FIELDS = [
@@ -33,7 +36,10 @@ class WarrantyController extends Controller
         "suburb",
         "city",
         "postcode",
-        "product_details",
+        "serial_number",
+        "purchase_date",
+        "product_type",
+        "product_applied",
         "dealer_name",
         "dealer_location",
         "subscribe",
@@ -84,7 +90,7 @@ class WarrantyController extends Controller
         $productDetailList = [];
 
         $data[] = [
-            'Warranty Claim Number' => rand(10000000, 99999999),
+            'Claim No' => rand(10000000, 99999999),
             'Status' => 'Pending',
             'Name' => $request->get('firstname').' '.$request->get('lastname'),
             'First Name' => $request->get('firstname'),
@@ -99,12 +105,12 @@ class WarrantyController extends Controller
             'Zip Code' => $request->get('postcode'),
             'Country' => 'New Zealand',
             'Serial Number' => $request->get('serial_number'),
-            'Purchase Date' => $request->get('purchase_date'),
-            'Product Type' => '0',
-            'Product Applied' => '0',
+            'Purchase Date' => Carbon::parse($request->get('purchase_date'))->format('d/m/Y'),
+            'Product Type' => $request->get('product_type'),
+            'Product Applied' => implode(',', $request->get('product_applied')),
             'Email Opt Out' => $request->get('subscribe'),
             'Dealer Name' => $request->get('dealer_name'),
-            'Dealer Address' => $request->get('dealer_location'),
+            'Dealer Address' => $request->get('dealer_location')
         ];
 
         $create = $this->warranty->save($data);
