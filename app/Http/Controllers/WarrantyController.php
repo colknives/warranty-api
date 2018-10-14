@@ -96,16 +96,16 @@ class WarrantyController extends Controller
         $productDetails = $request->get('product_details');
         $issues = [];
 
-        // foreach( $productDetails as $key => $productDetail ){
+        foreach( $productDetails as $key => $productDetail ){
 
-        //     if( $this->serialNumberExist($productDetail['serial_number']) ){
-        //         $issues[] = $productDetail['serial_number'];
-        //     }
+            if( $this->serialNumberExist($productDetail['serial_number']) ){
+                $issues[] = $productDetail['serial_number'];
+            }
 
-        //     if( !$this->serialNumberFormat($productDetail['product_type'], $productDetail['serial_number'], $productDetail['product_applied']) ){
-        //         $issues[] = $productDetail['serial_number'];
-        //     }
-        // }
+            if( !$this->serialNumberFormat($productDetail['product_type'], $productDetail['serial_number'], $productDetail['product_applied']) ){
+                $issues[] = $productDetail['serial_number'];
+            }
+        }
 
         if( count($issues) == 0 ){
 
@@ -131,11 +131,11 @@ class WarrantyController extends Controller
                     'Suburb/Town/Province' => $request->get('suburb'),
                     'Zip Code' => $request->get('postcode'),
                     'Country' => 'New Zealand',
-                    // 'Serial Number' => $productDetail['serial_number'],
-                    'Serial Number' => rand(100001, 999999),
+                    'Serial Number' => $productDetail['serial_number'],
+                    // 'Serial Number' => rand(100001, 999999),
                     'Purchase Date' => Carbon::parse($productDetail['purchase_date'])->format('d/m/Y'),
                     'Product Type' => $productDetail['product_type'],
-                    'Product Applied' => implode(',', $productDetail['product_applied']),
+                    'Product Applied' => ( is_array($productDetail['product_applied']) )? implode(',', $productDetail['product_applied']) : $productDetail['product_applied'],
                     'Email Opt Out' => $request->get('subscribe'),
                     'Dealer Name' => $request->get('dealer_name'),
                     'Dealer Address' => $request->get('dealer_location')
@@ -187,7 +187,7 @@ class WarrantyController extends Controller
             // print_r($create);
             // die();
 
-            Mail::to('colknives@gmail.com')
+            Mail::to($request->get('email'))
                         ->send(new WelcomeMail( $request->get('firstname').' '.$request->get('lastname'), $claimNo ));
 
             return response()->json([
