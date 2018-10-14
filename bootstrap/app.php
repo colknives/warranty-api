@@ -24,6 +24,7 @@ $app = new Laravel\Lumen\Application(
 );
 
 $app->configure('cors');
+$app->configure('mail');
 
 $app->withFacades();
 
@@ -49,6 +50,10 @@ $app->singleton(
     Illuminate\Contracts\Console\Kernel::class,
     App\Console\Kernel::class
 );
+
+$app->singleton('filesystem', function ($app) {
+    return $app->loadComponent('filesystems', Illuminate\Filesystem\FilesystemServiceProvider::class, 'filesystem');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -81,6 +86,7 @@ $app->middleware([
 */
 
 $app->register(Barryvdh\Cors\ServiceProvider::class);
+$app->register(\Illuminate\Mail\MailServiceProvider::class);
 
 // $app->register(App\Providers\AppServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
