@@ -6,6 +6,7 @@ require_once realpath(dirname(__FILE__).'/../../vendor/zohocrm/php-sdk/src/com/z
 require_once realpath(dirname(__FILE__).'/../../vendor/zohocrm/php-sdk/src/com/zoho/oauth/client/ZohoOAuth.php');
 
 use CristianPontes\ZohoCRMClient\ZohoCRMClient;
+use CristianPontes\ZohoCRMClient\Exception;
 use Illuminate\Support\Facades\Config;
 use ZCRMRestClient;
 use ZohoOAuth;
@@ -41,7 +42,7 @@ class ZohoService
         $this->moduleName = $moduleName;
         $this->moduleCode = $moduleCode;
 
-        $this->client = new ZohoCRMClient($this->moduleCode, '846eb480ccfe45b319c8d5671813626f');
+        $this->client = new ZohoCRMClient($this->moduleCode, '846eb480ccfe45b319c8d5671813626f', 'com', 500);
     }
 
     /**
@@ -55,12 +56,17 @@ class ZohoService
         $fields = $this->client->getFields()
           ->request();
 
+        // $fields = $this->client->searchRecords()
+        //                         ->withEmptyFields()
+        //                         ->where('Claim No', '13242865')
+        //                         ->request();
+
         print_r($fields);
         die();
     }
 
     /**
-     * Save warranty instance.
+     * Save instance.
      *
      * @return void
      */
@@ -84,7 +90,7 @@ class ZohoService
             return (object)[
                 "status" => 200,
                 "message" => __("messages.{$this->moduleName}.create.200"),
-                "model" => $records
+                "model" => $records[1]
             ];
         }
 
@@ -93,5 +99,61 @@ class ZohoService
             "message" => __("messages.{$this->moduleName}.create.404"),
             "model" => null
         ];
+    }
+
+    /**
+     * Upload instance.
+     *
+     * @return void
+     */
+    public function upload($id, $file)
+    {
+        $record = $this->client->uploadFile()
+          ->id($id)
+          ->uploadFromPath($file)
+          ->request();
+
+        print_r($record);
+        die();
+
+    }
+
+    /**
+     * Search instance.
+     *
+     * @return void
+     */
+    public function search($search = [])
+    {
+
+        try {
+         
+            $records = $this->client
+                            ->searchRecords()
+                            ->withEmptyFields();
+
+            foreach( $search as $field => $value ){
+                $records = $records->where($field, $value);
+            }
+
+            $records = $records->request();
+
+            return (object)[
+                "status" => 200,
+                "message" => __("messages.{$this->moduleName}.search.200"),
+                "model" => $records
+            ];
+
+        } catch (Exception\NoDataException  $e) {
+           
+           return (object)[
+                "status" => 404,
+                "message" => __("messages.{$this->moduleName}.search.404"),
+                "model" => null
+            ]; 
+           
+        }
+
+        
     }
 }
