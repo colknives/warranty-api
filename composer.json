@@ -18,7 +18,8 @@
         "nojacko/email-validator": "^1.1",
         "vlucas/phpdotenv": "~2.2",
         "zohocrm/php-sdk": "^1.0",
-        "league/flysystem-aws-s3-v3": "^1.0"
+        "league/flysystem-aws-s3-v3": "^1.0",
+        "ramsey/uuid": "^3.8"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

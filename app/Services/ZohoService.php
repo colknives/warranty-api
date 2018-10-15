@@ -86,11 +86,13 @@ class ZohoService
             }
         }
 
+        print_r($records);
+
         if( $success ){
             return (object)[
                 "status" => 200,
                 "message" => __("messages.{$this->moduleName}.create.200"),
-                "model" => $records[1]
+                "model" => $records
             ];
         }
 
@@ -112,10 +114,6 @@ class ZohoService
           ->id($id)
           ->uploadFromPath($file)
           ->request();
-
-        print_r($record);
-        die();
-
     }
 
     /**
