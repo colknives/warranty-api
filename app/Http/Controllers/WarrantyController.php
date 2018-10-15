@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\WarrantyRepository;
 use App\Services\WarrantyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
+use App\Jobs\AttachmentJob;
 use App\Mail\WelcomeMail;
 use Carbon\Carbon;
 
@@ -40,10 +42,15 @@ class WarrantyController extends Controller
         "product_type",
         "product_applied",
         "dealer_name",
-        "dealer_location",
-        "subscribe",
+        "dealer_location"
     ];
 
+    /**
+     * Warranty Repository Instance
+     *
+     * @var
+     */
+    protected $warrantyRepository;
 
 
     /**
@@ -52,13 +59,18 @@ class WarrantyController extends Controller
     protected $warranty;
 
     /**
-     * Create a new controller instance.
+     * WarrantyController constructor.
+     * @param WarrantyService $warranty
+     * @param WarrantyRepository $warrantyRepository
      *
      * @return void
      */
-    public function __construct(WarrantyService $warranty)
+    public function __construct(
+        WarrantyService $warranty,
+        WarrantyRepository $warrantyRepository)
     {   
         $this->warranty = $warranty;
+        $this->warrantyRepository = $warrantyRepository;
     }
 
     /**
@@ -87,30 +99,27 @@ class WarrantyController extends Controller
 
         $this->validate($request, static::CREATE_RULES);
 
-        // die();
-
-        // print_r('hehehe');
-        // print_r($request->all());
-        // die();
-
         $productDetails = $request->get('product_details');
-        $issues = [];
+        $exist = [];
+        $invalid = [];
 
         foreach( $productDetails as $key => $productDetail ){
 
             if( $this->serialNumberExist($productDetail['serial_number']) ){
-                $issues[] = $productDetail['serial_number'];
+                $exist[] = $productDetail['serial_number'];
             }
 
             if( !$this->serialNumberFormat($productDetail['product_type'], $productDetail['serial_number'], $productDetail['product_applied']) ){
-                $issues[] = $productDetail['serial_number'];
+                $invalid[] = $productDetail['serial_number'];
             }
         }
 
-        if( count($issues) == 0 ){
+        if( count($exist) == 0 && count($invalid) == 0 ){
 
             $data = [];
+            $localData = [];
             $details = [];
+            $test = [];
 
             $claimNo = rand(100001, 999999);
 
@@ -130,62 +139,72 @@ class WarrantyController extends Controller
                     'City' => $request->get('city'),
                     'Suburb/Town/Province' => $request->get('suburb'),
                     'Zip Code' => $request->get('postcode'),
-                    'Country' => 'New Zealand',
+                    'Country' => $request->get('country'),
                     'Serial Number' => $productDetail['serial_number'],
-                    // 'Serial Number' => rand(100001, 999999),
                     'Purchase Date' => Carbon::parse($productDetail['purchase_date'])->format('d/m/Y'),
                     'Product Type' => $productDetail['product_type'],
-                    'Product Applied' => ( is_array($productDetail['product_applied']) )? implode(',', $productDetail['product_applied']) : $productDetail['product_applied'],
+                    'Product Applied' => ( is_array($productDetail['product_applied']) )? implode(', ', $productDetail['product_applied']) : $productDetail['product_applied'],
                     'Email Opt Out' => $request->get('subscribe'),
                     'Dealer Name' => $request->get('dealer_name'),
                     'Dealer Address' => $request->get('dealer_location')
                 ];
 
-                $create = $this->warranty->save($data);
-                $details[] = $create->model;
-
             }
 
-            if( count($details) > 0 ){
+            $create = $this->warranty->save($data);
 
-                foreach( $details as $key => $detail ){
+            if( $create->status == 200 ){
 
-                    $value = '';
-                    $filename = '';
+                foreach( $create->model as $key => $info ){
 
-                    if( $productDetails[$key]['proof_purchase_type'] == 'image/jpeg' ){
+                    $index = $key - 1;
+                    $filename = str_random('18') . Carbon::now()->timestamp;
 
-                        $value = substr($productDetails[$key]['proof_purchase'], 22);
-
-                        $filename = str_random('18') . Carbon::now()->timestamp . ".jpg";
-                        Storage::disk('warranty_attachment')->put( $filename, base64_decode($value) );
-
-
+                    if( $productDetails[$index]['proof_purchase_type'] == 'image/jpeg' ){
+                        $filename = $filename.'.jpg';
                     }
-                    elseif( $productDetails[$key]['proof_purchase_type'] == 'image/png' ){
-
-                        $value = substr($productDetails[$key]['proof_purchase'], 21);
-
-                        $filename = str_random('18') . Carbon::now()->timestamp . ".png";
-                        Storage::disk('warranty_attachment')->put( $filename, base64_decode($value) );
-
+                    elseif( $productDetails[$index]['proof_purchase_type'] == 'image/png' ){
+                        $filename = $filename.'.png';
+                    }
+                    elseif( $productDetails[$index]['proof_purchase_type'] == 'application/pdf' ){
+                        $filename = $filename.'.pdf';
                     }
 
-            //         $file = Storage::disk('warranty_attachment')->path($filename);
+                    $base = 'data:'.$productDetails[$index]['proof_purchase_type'].';base64,';
+                    $value = str_replace($base, '', $productDetails[$index]['proof_purchase']);
+                    Storage::disk('warranty_attachment')->put( $filename, base64_decode($value) );
 
-            //         // print_r($detail->id.' '.$file);
-            //         // die();
+                    $jobData = [
+                        'filename' => Storage::disk('warranty_attachment')->path($filename),
+                        'id' => $info->id,
+                    ];
 
-            //         $file = Storage::disk('warranty_attachment')->url($filename);
-            //         $upload = $this->warranty->upload($detail->id, $file);
+                    dispatch(new AttachmentJob($jobData));
 
+                    $localData = [
+                        'claim_no' => $claimNo,
+                        'firstname' => $request->get('firstname'),
+                        'lastname' => $request->get('lastname'),
+                        'email' => $request->get('email'),
+                        'address' => $request->get('address'),
+                        'contact_number' => $request->get('contact_number'),
+                        'city' => $request->get('city'),
+                        'suburb' => $request->get('suburb'),
+                        'postcode' => $request->get('postcode'),
+                        'country' => $request->get('country'),
+                        'serial_number' => $productDetails[$index]['serial_number'],
+                        'purchase_date' => Carbon::parse($productDetails[$index]['purchase_date'])->format('Y-m-d'),
+                        'product_type' => $productDetails[$index]['product_type'],
+                        'product_applied' => ( is_array($productDetails[$index]['product_applied']) )? implode(', ', $productDetails[$index]['product_applied']) : $productDetails[$index]['product_applied'],
+                        'proof_purchase' => $filename,
+                        'dealer_name' => $request->get('dealer_name'),
+                        'dealer_location' => $request->get('dealer_location'),
+                    ];
+
+                    $saveLocal = $this->warrantyRepository->create($localData);
                 }
             }
 
-            // $upload = $this->warranty->upload('3548539000000330025', '/var/www/tfgroup/api/zoho/storage/attachment/fx1Vvr5a3AEBy6rQTe1539530002.png');
-
-            // print_r($create);
-            // die();
 
             Mail::to($request->get('email'))
                         ->send(new WelcomeMail( $request->get('firstname').' '.$request->get('lastname'), $claimNo ));
@@ -196,10 +215,26 @@ class WarrantyController extends Controller
             ]);
         }
 
+        if( count($invalid) > 0  ){
+
+            $data = [
+                'serial' => implode(', ', $invalid)
+            ];
+
+            return response()->json([
+                "message" => __("messages.warranty.serial.invalid", $data),
+                "data" => null
+            ], 404); 
+        }
+
+        $data = [
+            'serial' => implode(', ', $exist)
+        ];
+
         return response()->json([
-            "message" => __("messages.warranty.serial.issues"),
+            "message" => __("messages.warranty.serial.exist", $data),
             "data" => null
-        ], 400);        
+        ], 404);     
     }
 
     /**

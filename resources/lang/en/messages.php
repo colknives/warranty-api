@@ -10,7 +10,8 @@ return [
             "404" => "Warranty not found"
         ],
         "serial" => [
-        	"issues" => "Some of the serial numbers given is either already exist or invalid"
+        	"exist" => "Serial number(s) :serial already exist",
+            "invalid" => "Invalid serial number(s) :serial"
         ]
     ]
 ];

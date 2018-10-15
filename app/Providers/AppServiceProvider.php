@@ -3,16 +3,18 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Models\Warranty;
+use App\Observers\WarrantyObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Boot Method
      *
      * @return void
      */
-    public function register()
+    public function boot()
     {
-        //
+        Warranty::observe(WarrantyObserver::class);
     }
 }

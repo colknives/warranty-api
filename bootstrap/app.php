@@ -28,7 +28,7 @@ $app->configure('mail');
 
 $app->withFacades();
 
-// $app->withEloquent();
+$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -88,9 +88,9 @@ $app->middleware([
 $app->register(Barryvdh\Cors\ServiceProvider::class);
 $app->register(\Illuminate\Mail\MailServiceProvider::class);
 
-// $app->register(App\Providers\AppServiceProvider::class);
-// $app->register(App\Providers\AuthServiceProvider::class);
-// $app->register(App\Providers\EventServiceProvider::class);
+$app->register(App\Providers\AppServiceProvider::class);
+$app->register(App\Providers\AuthServiceProvider::class);
+$app->register(App\Providers\EventServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
