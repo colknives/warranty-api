@@ -25,6 +25,7 @@ class CreateWarrantiesTable extends Migration
             $table->string('suburb', 255)->nullable();
             $table->string('postcode',50)->nullable();
             $table->string('country',50)->nullable();
+            $table->string('invoice_number',50)->nullable();
             $table->string('serial_number',50)->nullable();
             $table->date('purchase_date')->nullable();
             $table->enum('product_type', [
