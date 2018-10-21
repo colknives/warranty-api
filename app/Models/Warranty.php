@@ -1,6 +1,6 @@
 <?php
 /**
-  * Customer model
+  * Warranty model
   */
 
 namespace App\Models;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 /**
- * Class Customer
+ * Class Warranty
  * @package App\Models
  */
 class Warranty extends Model

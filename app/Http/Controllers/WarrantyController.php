@@ -140,11 +140,14 @@ class WarrantyController extends Controller
                     'Suburb/Town/Province' => $request->get('suburb'),
                     'Zip Code' => $request->get('postcode'),
                     'Country' => $request->get('country'),
+                    'Invoice Number' => $productDetail['invoice_number'],
                     'Serial Number' => $productDetail['serial_number'],
                     'Purchase Date' => Carbon::parse($productDetail['purchase_date'])->format('d/m/Y'),
                     'Product Type' => $productDetail['product_type'],
                     'Product Applied' => ( is_array($productDetail['product_applied']) )? implode(', ', $productDetail['product_applied']) : $productDetail['product_applied'],
-                    'Email Opt Out' => $request->get('subscribe'),
+                    'Vehicle Registration' => $productDetail['vehicle_registration'],
+                    'Make' => $productDetail['vehicle_make'],
+                    'Model' => $productDetail['vehicle_model'],
                     'Dealer Name' => $request->get('dealer_name'),
                     'Dealer Address' => $request->get('dealer_location')
                 ];
@@ -192,6 +195,10 @@ class WarrantyController extends Controller
                         'suburb' => $request->get('suburb'),
                         'postcode' => $request->get('postcode'),
                         'country' => $request->get('country'),
+                        'invoice_number' => $productDetails[$index]['invoice_number'],
+                        'vehicle_registration' => $productDetails[$index]['vehicle_registration'],
+                        'vehicle_make' => $productDetails[$index]['vehicle_make'],
+                        'vehicle_model' => $productDetails[$index]['vehicle_model'],
                         'serial_number' => $productDetails[$index]['serial_number'],
                         'purchase_date' => Carbon::parse($productDetails[$index]['purchase_date'])->format('Y-m-d'),
                         'product_type' => $productDetails[$index]['product_type'],
@@ -264,134 +271,14 @@ class WarrantyController extends Controller
 
         if( in_array($type, ['Soil Guard', 'Leather Guard', 'DURA SEAL Vehicle Protection']) ){
             $typeCode = substr($serialNumber, 0, 2);
-            $yearCode = substr($serialNumber, 2, 2);
-            $appliedCode = substr($serialNumber, -2);
         }
         elseif( in_array($type, ['Premium Care Leather', 'Premium Care Fabric', 'Premium Care Outdoor']) ){
             $typeCode = substr($serialNumber, 0, 3);
-            $yearCode = substr($serialNumber, 3, 2);
-            $appliedCode = substr($serialNumber, -2);
         }
         else{
             $typeCode = substr($serialNumber, 0, 4);
-            $yearCode = substr($serialNumber, 4, 2);
-            $appliedCode = substr($serialNumber, -2);
         }
 
-        switch ($type) {
-            case 'Soil Guard':
-                if( ( $typeCode != 'SG' ) || ( $yearCode > date('y') ) ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Single' && $appliedCode != 'SL' ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Double' && $appliedCode != 'DB' ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Multi' && $appliedCode != 'MT' ){
-                    $valid = false;
-                }
-                break;
-            case 'Leather Guard':
-                if( ( $typeCode != 'LG' ) || ( $yearCode > date('y') ) ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Single' && $appliedCode != 'SL' ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Double' && $appliedCode != 'DB' ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Multi' && $appliedCode != 'MT' ){
-                    $valid = false;
-                }
-                break;
-            case 'Premium Care Leather':
-                if( ( $typeCode != 'PCL' ) || ( $yearCode > date('y') ) ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Mini' && $appliedCode != 'MN' ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Midi' && $appliedCode != 'MD' ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Maxi' && $appliedCode != 'MX' ){
-                    $valid = false;
-                }
-                break;
-            case 'Premium Care Fabric':
-                if( ( $typeCode != 'PCF' ) || ( $yearCode > date('y') ) ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Mini' && $appliedCode != 'MN' ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Midi' && $appliedCode != 'MD' ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Maxi' && $appliedCode != 'MX' ){
-                    $valid = false;
-                }
-                break;
-            case 'Premium Care Synthetic':
-                if( ( $typeCode != 'PCSU' ) || ( $yearCode > date('y') ) ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Mini' && $appliedCode != 'MN' ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Midi' && $appliedCode != 'MD' ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Maxi' && $appliedCode != 'MX' ){
-                    $valid = false;
-                }
-                break;
-            case 'Premium Care Outdoor':
-                if( ( $typeCode != 'PCO' ) || ( $yearCode > date('y') ) ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Small' && $appliedCode != 'SM' ){
-                    $valid = false;
-                }
-
-                if( $productApplied == 'Medium' && $appliedCode != 'MD' ){
-                    $valid = false;
-                }
-                break;
-            case 'DURA SEAL Vehicle Protection':
-                if( ( $typeCode != 'DS' ) || ( $yearCode > date('y') ) || ( $appliedCode != 'PK' ) ){
-                    $valid = false;
-                }
-                break;
-            case 'DURA SEAL Leather Protection':
-                if( ( $typeCode != 'DSL' ) || ( $yearCode > date('y') ) || ( $appliedCode != 'PO' ) ){
-                    $valid = false;
-                }
-                break;
-            default:
-                $valid = false;
-                break;
-        }
-
-        return $valid;
+        return ( ( $type == 'Soil Guard' && $typeCode == 'SG' ) || ( $type == 'Leather Guard' && $typeCode == 'LG' ) || ( $type == 'Premium Care Leather' && $typeCode == 'PCL' ) || ( $type == 'Premium Care Synthetic' && $typeCode == 'PCSU' ) || ( $type == 'Premium Care Outdoor' && $typeCode == 'PCO' ) || ( $type == 'DURA SEAL Vehicle Protection' && $typeCode == 'DS' ) || ( $type == 'DURA SEAL Leather Protection' && $typeCode == 'DSL' ) );
     }
 }

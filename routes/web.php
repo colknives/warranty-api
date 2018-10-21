@@ -34,3 +34,11 @@ $router->group(["prefix" => "warranty"], function() use ($router){
 	$router->post('/save', ["as" => "warranty.save", "uses" => "WarrantyController@save"]);
 
 });
+
+$router->group(["prefix" => "vehicle-info"], function() use ($router){
+
+	$router->get('/make/list[/{keyword:[a-z|A-Z|0-9]+}]', ["as" => "vehicle.make.list", "uses" => "VehicleInfoController@getMake"]);
+
+	$router->get('/model/list[/{keyword:[a-z|A-Z|0-9]+}]', ["as" => "vehicle.model.list", "uses" => "VehicleInfoController@getModel"]);
+
+});
