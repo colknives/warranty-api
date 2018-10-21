@@ -185,7 +185,7 @@ td[class="spechide"]
     <tr>
       <td valign="top" align="center" class="specbundle"><div class="contentEditableContainer contentTextEditable">
                                 <div class="contentEditable">
-                                  <p style='text-align:center;margin:0;font-family:Georgia,Time,sans-serif;font-size:26px;color:#222222;'><span class="specbundle2"><span class="font1"><img src="{{ app('url')->asset('public/images/mail/TF-Group-Logo-500-08082018.png') }}" width='500' alt='' data-default="placeholder" data-max-width="560"></span></span></p>
+                                  <p style='text-align:center;margin:0;font-family:Georgia,Time,sans-serif;font-size:26px;color:#222222;'><span class="specbundle2"><span class="font1"><img src="https://cdn.shopify.com/s/files/1/2711/9576/files/TF-Group-Logo-500-08082018_1728x.png" width='500' alt='' data-default="placeholder" data-max-width="560"></span></span></p>
                                 </div>
                               </div></td>
       </td>

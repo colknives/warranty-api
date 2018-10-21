@@ -13,5 +13,11 @@ return [
         	"exist" => "Serial number(s) :serial already exist",
             "invalid" => "Invalid serial number(s) :serial"
         ]
+    ],
+    "vehicle_info" => [
+        "list" => [
+            "200" => "Vehicle Info successfully fetched",
+            "404" => "Vehicle Info unsuccessfully fetched"
+        ]
     ]
 ];
