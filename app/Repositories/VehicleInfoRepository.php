@@ -9,6 +9,7 @@ use App\Models\VehicleInfo;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
+use DB;
 
 /**
  * Class VehicleInfoRepository
@@ -85,6 +86,61 @@ class VehicleInfoRepository extends CrudRepository
 
         if( $result->count() > 0 ){
             $model = array_pluck($result->get()->toArray(), 'model');
+        }
+
+        return (object)[
+            "status" => 200,
+            "message" => __("messages.vehicle_info.list.200"),
+            "model" => $model
+        ];
+    }
+
+    /**
+     * Get make full list of the model
+     *
+     * @param $keyword
+     * @return object
+     */
+    public function makeList()
+    {
+
+        $model = [];
+
+        $result = $this->model
+                     ->select([DB::raw('make as "text"'), DB::raw('make as "value"')])
+                     ->groupBy(['make'])
+                     ->orderBy('make', 'ASC');
+
+        if( $result->count() > 0 ){
+            $model = $result->get()->toArray();
+        }
+
+        return (object)[
+            "status" => 200,
+            "message" => __("messages.vehicle_info.list.200"),
+            "make" => $model
+        ];
+    }
+
+    /**
+     * Get model full list of the model
+     *
+     * @param $keyword
+     * @return object
+     */
+    public function modelList($make)
+    {
+
+        $model = [];
+
+        $result = $this->model
+                     ->select([DB::raw('model as "text"'), DB::raw('model as "value"')])
+                     ->where('make', $make)
+                     ->groupBy(['model'])
+                     ->orderBy('model', 'ASC');
+
+        if( $result->count() > 0 ){
+            $model = $result->get()->toArray();
         }
 
         return (object)[

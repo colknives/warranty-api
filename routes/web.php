@@ -43,4 +43,8 @@ $router->group(["prefix" => "vehicle-info"], function() use ($router){
 
 	$router->get('/model/list[/{keyword:[a-z|A-Z|0-9]+}]', ["as" => "vehicle.model.list", "uses" => "VehicleInfoController@getModel"]);
 
+	$router->get('/make', ["as" => "vehicle.make.list.full", "uses" => "VehicleInfoController@makeList"]);	
+
+	$router->post('/model', ["as" => "vehicle.model.list.full", "uses" => "VehicleInfoController@modelList"]);	
+
 });
