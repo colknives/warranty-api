@@ -90,6 +90,74 @@ class WarrantyController extends Controller
     }
 
     /**
+     * Get Product Type via Serial Number instance.
+     *
+     * @return void
+     */
+    public function getTypeViaSerial(Request $request)
+    {
+
+        $serialNumber = $request->get('serial_number');
+
+        $type = $this->identifyType(strtoupper($serialNumber));
+
+        if( $type ){
+            return response()->json([
+                "message" => __("messages.warranty.type.200"),
+                "type" => $type
+            ]);
+        }
+
+        return response()->json([
+            "message" => __("messages.warranty.type.404"),
+            "type" => null
+        ],404);
+
+    }
+
+    /**
+     * Get Product Type via Serial Number instance.
+     *
+     * @return void
+     */
+    public function identifyType($serialNumber)
+    {
+
+        $type = "";
+        $typeCode = substr($serialNumber, 0, 4);
+
+        if( $typeCode == 'PCSU' ){
+            return 'Premium Care Synthetic';
+        }
+
+        $typeCode = substr($serialNumber, 0, 3);
+
+        if( $typeCode == 'PCL' ){
+            return 'Premium Care Leather';
+        }
+        elseif( $typeCode == 'PCO' ){
+            return 'Premium Care Outdoor';
+        }
+        elseif( $typeCode == 'DSL' ){
+            return 'DURA SEAL Leather Protection';
+        }
+
+        $typeCode = substr($serialNumber, 0, 2);
+
+        if( $typeCode == 'SG' ){
+            return 'Soil Guard';
+        }
+        elseif( $typeCode == 'LG' ){
+            return 'Leather Guard';
+        }
+        elseif( $typeCode == 'DS' ){
+            return 'DURA SEAL Vehicle Protection';
+        }
+
+        return false;
+    }
+
+    /**
      * Save warranty instance.
      *
      * @return response

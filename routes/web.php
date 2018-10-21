@@ -33,6 +33,8 @@ $router->group(["prefix" => "warranty"], function() use ($router){
 
 	$router->post('/save', ["as" => "warranty.save", "uses" => "WarrantyController@save"]);
 
+	$router->post('/type', ["as" => "warranty.type", "uses" => "WarrantyController@getTypeViaSerial"]);
+
 });
 
 $router->group(["prefix" => "vehicle-info"], function() use ($router){
