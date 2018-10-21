@@ -12,7 +12,11 @@ return [
         "serial" => [
         	"exist" => "Serial number(s) :serial already exist",
             "invalid" => "Invalid serial number(s) :serial"
-        ]
+        ],
+        "type" => [
+            "200" => "Serial successfully idetified",
+            "404" => "Serial unsuccessfully idetified"
+        ],
     ],
     "vehicle_info" => [
         "list" => [
