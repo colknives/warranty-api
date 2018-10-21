@@ -140,6 +140,8 @@ class WarrantyController extends Controller
         }
         elseif( $typeCode == 'DSL' ){
             return 'DURA SEAL Leather Protection';
+        }elseif( $typeCode == 'PCF' ){
+            return 'Premium Care Fabric';
         }
 
         $typeCode = substr($serialNumber, 0, 2);
