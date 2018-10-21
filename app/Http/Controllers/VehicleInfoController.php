@@ -59,4 +59,39 @@ class VehicleInfoController extends Controller
             "items" => $list->model,
         ]);
     }
+
+    /**
+     * Get make full list instance.
+     *
+     * @return void
+     */
+    public function makeList()
+    {
+
+        $list = $this->vehicleInfoRepository->makeList();
+
+        return response()->json([
+            "message" => $list->message,
+            "makes" => $list->make,
+        ]);
+    }
+
+    /**
+     * Get model full list instance.
+     *
+     * @return void
+     */
+    public function modelList(Request $request)
+    {
+        $this->validate($request, [
+            'make' => "required"
+        ]);
+
+        $list = $this->vehicleInfoRepository->modelList($request->get('make'));
+
+        return response()->json([
+            "message" => $list->message,
+            "models" => $list->model,
+        ]);
+    }
 }
