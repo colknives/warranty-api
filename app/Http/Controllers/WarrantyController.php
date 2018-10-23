@@ -252,7 +252,7 @@ class WarrantyController extends Controller
                         'id' => $info->id,
                     ];
 
-                    dispatch(new AttachmentJob($jobData));
+                    // dispatch(new AttachmentJob($jobData));
 
                     $localData = [
                         'claim_no' => $claimNo,
