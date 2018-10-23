@@ -7,7 +7,8 @@ class WarrantyService extends ZohoService
 
     const MODULE_NAME = 'warranty';
 
-    const MODULE_CODE = 'CustomModule2';
+    // const MODULE_CODE = 'CustomModule2';
+    const MODULE_CODE = 'CustomModule1';
 
     /**
      * Create a new controller instance.
