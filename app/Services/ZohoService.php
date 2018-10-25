@@ -58,16 +58,24 @@ class ZohoService
     public function list()
     {
 
-        $fields = $this->client->getFields()
-          ->request();
+        // $fields = $this->client->getFields()
+        //   ->request();
 
         // $fields = $this->client->searchRecords()
         //                         ->withEmptyFields()
         //                         ->where('Claim No', '13242865')
         //                         ->request();
 
-        print_r($fields);
-        die();
+        // print_r($fields);
+        // die();
+
+
+        
+
+
+
+
+
     }
 
     /**
@@ -90,8 +98,6 @@ class ZohoService
                 $success = false;
             }
         }
-
-        print_r($records);
 
         if( $success ){
             return (object)[
