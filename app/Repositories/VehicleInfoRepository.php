@@ -115,6 +115,11 @@ class VehicleInfoRepository extends CrudRepository
             $model = $result->get()->toArray();
         }
 
+        $model[] = [
+            'text' => 'Others',
+            'value' => 'Others'
+        ];
+
         return (object)[
             "status" => 200,
             "message" => __("messages.vehicle_info.list.200"),
@@ -142,6 +147,11 @@ class VehicleInfoRepository extends CrudRepository
         if( $result->count() > 0 ){
             $model = $result->get()->toArray();
         }
+
+        $model[] = [
+            'text' => 'Others',
+            'value' => 'Others'
+        ];
 
         return (object)[
             "status" => 200,
