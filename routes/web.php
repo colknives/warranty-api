@@ -48,3 +48,9 @@ $router->group(["prefix" => "vehicle-info"], function() use ($router){
 	$router->post('/model', ["as" => "vehicle.model.list.full", "uses" => "VehicleInfoController@modelList"]);	
 
 });
+
+$router->group(["prefix" => "dealer-info"], function() use ($router){
+
+	$router->post('/name', ["as" => "dealer.name.list", "uses" => "DealerInfoController@nameList"]);	
+
+});

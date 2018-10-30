@@ -23,5 +23,11 @@ return [
             "200" => "Vehicle Info successfully fetched",
             "404" => "Vehicle Info unsuccessfully fetched"
         ]
+    ],
+    "dealer_info" => [
+        "list" => [
+            "200" => "Dealer Info successfully fetched",
+            "404" => "Dealer Info unsuccessfully fetched"
+        ]
     ]
 ];
