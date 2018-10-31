@@ -218,7 +218,7 @@ td[class="spechide"]
                               <p>Hello {{ $name }},</p>
                               <div class="contentEditableContainer contentTextEditable">
                                 <div class="contentEditable" align='center'>
-                                  <h2 >Thank you for Registering your Product!</h2>
+                                  <h2 >Thank you for Registering your {{ $productType }} Product!</h2>
                                 </div>
                               </div>
                             </td>

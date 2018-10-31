@@ -188,8 +188,7 @@ class WarrantyController extends Controller
 
             $data = [];
             $localData = [];
-            $details = [];
-            $test = [];
+            $productType = [];
 
             $claimNo = rand(100001, 999999);
 
@@ -254,6 +253,8 @@ class WarrantyController extends Controller
 
                     // dispatch(new AttachmentJob($jobData));
 
+                    $productType[] = $productDetails[$index]['product_type']; 
+
                     $localData = [
                         'claim_no' => $claimNo,
                         'firstname' => $request->get('firstname'),
@@ -284,7 +285,7 @@ class WarrantyController extends Controller
 
 
             Mail::to($request->get('email'))
-                        ->send(new WelcomeMail( $request->get('firstname').' '.$request->get('lastname'), $claimNo ));
+                        ->send(new WelcomeMail( $request->get('firstname').' '.$request->get('lastname'), $claimNo, implode(',', $productType) ));
 
             return response()->json([
                 "message" => __("messages.warranty.create.200"),

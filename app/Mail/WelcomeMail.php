@@ -30,14 +30,21 @@ class WelcomeMail extends Mailable
     protected $claim = '';
 
     /**
+     * Product Type ordered by receiver
+     *
+     */
+    protected $productType = '';
+
+    /**
      * Create a new message instance.
      * @param String $code
      * @return void
      */
-    public function __construct($name, $claim)
+    public function __construct($name, $claim, $productType)
     {
         $this->name = $name;
         $this->claim = $claim;
+        $this->productType = $productType;
     }
 
     /**
@@ -51,7 +58,8 @@ class WelcomeMail extends Mailable
                     ->view('mail.welcome')
                     ->with([
                         'name' => $this->name,
-                        'claim' => $this->claim
+                        'claim' => $this->claim,
+                        'productType' => $this->productType
                     ]);
     }
 }
