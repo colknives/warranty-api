@@ -251,7 +251,7 @@ class WarrantyController extends Controller
                         'id' => $info->id,
                     ];
 
-                    // dispatch(new AttachmentJob($jobData));
+                    dispatch(new AttachmentJob($jobData));
 
                     $productType[] = $productDetails[$index]['product_type']; 
 
