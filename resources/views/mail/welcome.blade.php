@@ -242,7 +242,7 @@ td[class="spechide"]
                                     <br>
                                     <p>Cheers,</p>
                                     <br>
-                                    <p><span style='color:#222222;'>Peter Parker</span></p>
+                                    <p><span style='color:#222222;'>The Warranties Team</span></p>
                                   </p>
                                 </div>
                               </div>
