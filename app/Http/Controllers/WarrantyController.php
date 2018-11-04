@@ -241,6 +241,12 @@ class WarrantyController extends Controller
                     elseif( $productDetails[$index]['proof_purchase_type'] == 'application/pdf' ){
                         $filename = $filename.'.pdf';
                     }
+                    elseif( $productDetails[$index]['proof_purchase_type'] == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ){
+                        $filename = $filename.'.docx';
+                    }
+                    elseif( $productDetails[$index]['proof_purchase_type'] == 'application/msword' ){
+                        $filename = $filename.'.doc';
+                    }
 
                     $base = 'data:'.$productDetails[$index]['proof_purchase_type'].';base64,';
                     $value = str_replace($base, '', $productDetails[$index]['proof_purchase']);
