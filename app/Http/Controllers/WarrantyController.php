@@ -24,8 +24,7 @@ class WarrantyController extends Controller
         "suburb" => "required",
         "city" => "required",
         "postcode" => "required",
-        "dealer_name" => "required",
-        "dealer_location" => "required"
+        "dealer_name" => "required"
     ];
 
     const CREATE_FIELDS = [
