@@ -194,7 +194,7 @@ class WarrantyController extends Controller
             foreach( $productDetails as $key => $productDetail ){
 
                 $data[] = [
-                    'Claim No' => $claimNo,
+                    'Registration Number' => $claimNo,
                     'Status' => 'Pending',
                     'Name' => $request->get('firstname').' '.$request->get('lastname'),
                     'First Name' => $request->get('firstname'),
