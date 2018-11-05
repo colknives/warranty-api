@@ -58,32 +58,32 @@ class ZohoService
     public function list()
     {
 
-        // $fields = $this->client->getFields()
-        //   ->request();
+        $fields = $this->client->getFields()
+          ->request();
 
-        // $fields = $this->client->searchRecords()
-        //                         ->withEmptyFields()
-        //                         ->where('Claim No', '13242865')
-        //                         ->request();
+/*        $fields = $this->client->searchRecords()
+                                ->withEmptyFields()
+                                ->where('Claim No', '13242865')
+                                ->request();*/
 
-        // print_r($fields);
-        // die();
-
-
-        $configuration=[
-            "client_id"=>"1000.1PZUFPR3W9U329484SB8MKVFRS7KKP",
-            "client_secret"=>"7df9140d0b835a067aaaf84e9501d5c55efef67e67",
-            "redirect_uri"=>"http://localhost:8001/auth/callback",
-            "currentUserEmail"=>"adrianmunt@tfgroup.co.nz",
-            "applicationLogFilePath"=> storage_path("logs/ZCRMClientLibrary.log"), 
-            "token_persistence_path"=> storage_path("logs/zcrm_oauthtokens.txt")
-        ];
-
-        ZCRMRestClient::initialize($configuration);
-
-
-        print_r($configuration);
+        print_r($fields);
         die();
+
+
+        // $configuration=[
+        //     "client_id"=>"1000.1PZUFPR3W9U329484SB8MKVFRS7KKP",
+        //     "client_secret"=>"7df9140d0b835a067aaaf84e9501d5c55efef67e67",
+        //     "redirect_uri"=>"http://localhost:8001/auth/callback",
+        //     "currentUserEmail"=>"adrianmunt@tfgroup.co.nz",
+        //     "applicationLogFilePath"=> storage_path("logs/ZCRMClientLibrary.log"), 
+        //     "token_persistence_path"=> storage_path("logs/zcrm_oauthtokens.txt")
+        // ];
+
+        // ZCRMRestClient::initialize($configuration);
+
+
+        // print_r($configuration);
+        // die();
 
 
 
