@@ -237,7 +237,7 @@ td[class="spechide"]
                                     <h2>Your warranty registration no. is {{ $claim }}</h2><br/>
                                     <p>For the mean time, Feel free to visit our website at <a href="http://www.tfgroup.co.nz">www.tfgroup.co.nz</a> for more details. 
                                      <br/><br/> 
-                                      To Ensure delivery to your inbox, add <a href="mailto:warranty@tfgroup.co.nz">warranty@tfgroup.co.nz</a> to your address book/contacts.Have questions? Get in touch with us via Facebook or Twitter, or email our support team.</p>
+                                      To ensure delivery to your inbox, add <a href="mailto:warranty@tfgroup.co.nz">warranty@tfgroup.co.nz</a> to your address book/contacts.Have questions? Get in touch with us via Facebook or Twitter, or email our support team.</p>
                                     <br>
                                     <br>
                                     <p>Cheers,</p>
