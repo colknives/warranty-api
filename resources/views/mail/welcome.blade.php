@@ -231,13 +231,13 @@ td[class="spechide"]
                               <div class="contentEditableContainer contentTextEditable">
                                 <div class="contentEditable" align='center'>
                                   <p >
-                                    <strong>Greetings from TF GROUP Warranty Team</strong>.Your product now on review and we will be sending you a letter of warranty acceptance shortly once the registration has been approved. 
+                                    <strong>Greetings from TF GROUP Warranty Team</strong>.Your registration is now being reviewed and we will be sending you a letter of warranty acceptance shortly once the registration has been approved. 
                                     <br>
                                     <br>
                                     <h2>Your warranty registration no. is {{ $claim }}</h2><br/>
-                                    <p>For the mean time, Feel free to visit our website at <a href="http://www.tfgroup.co.nz">www.tfgroup.co.nz</a> for more details. 
+                                    <p>In the mean time, Feel free to visit our website at <a href="http://www.tfgroup.co.nz">www.tfgroup.co.nz</a> for more details. 
                                      <br/><br/> 
-                                      To ensure delivery to your inbox, add <a href="mailto:warranty@tfgroup.co.nz">warranty@tfgroup.co.nz</a> to your address book/contacts.Have questions? Get in touch with us via Facebook or Twitter, or email our support team.</p>
+                                      To ensure delivery to your inbox, add <a href="mailto:warranty@tfgroup.co.nz">warranty@tfgroup.co.nz</a> to your address book/contacts.Have questions? Get in touch with us via Facebook or email our support team.</p>
                                     <br>
                                     <br>
                                     <p>Cheers,</p>

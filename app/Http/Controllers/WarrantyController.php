@@ -44,6 +44,19 @@ class WarrantyController extends Controller
         "dealer_location"
     ];
 
+    const SAFE_SERIALS = [
+        "PCSUTESTER",
+        "PCLTESTER",
+        "PCOTESTER",
+        "DSLTESTER",
+        "PCFTESTER",
+        "SGTESTER",
+        "LGTESTER",
+        "DSTESTER"
+    ];
+
+
+
     /**
      * Warranty Repository Instance
      *
@@ -175,7 +188,9 @@ class WarrantyController extends Controller
         foreach( $productDetails as $key => $productDetail ){
 
             if( $this->serialNumberExist($productDetail['serial_number']) ){
-                $exist[] = $productDetail['serial_number'];
+                if( !in_array($productDetail['serial_number'], static::SAFE_SERIALS) ){
+                    $exist[] = $productDetail['serial_number'];
+                }
             }
 
             if( !$this->serialNumberFormat($productDetail['product_type'], $productDetail['serial_number'], $productDetail['product_applied']) ){
