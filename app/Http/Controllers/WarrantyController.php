@@ -272,6 +272,7 @@ class WarrantyController extends Controller
 
                         $jobData = [
                             'filename' => Storage::disk('warranty_attachment')->path($filename),
+                            'mimetype' => $productDetails[$index]['proof_purchase_type'],
                             'id' => $info->id,
                         ];
 
