@@ -261,17 +261,22 @@ class WarrantyController extends Controller
                     elseif( $productDetails[$index]['proof_purchase_type'] == 'application/msword' ){
                         $filename = $filename.'.doc';
                     }
+                    else{
+                        $filename = '';
+                    }
 
-                    $base = 'data:'.$productDetails[$index]['proof_purchase_type'].';base64,';
-                    $value = str_replace($base, '', $productDetails[$index]['proof_purchase']);
-                    Storage::disk('warranty_attachment')->put( $filename, base64_decode($value) );
+                    if( $filename != '' ){
+                        $base = 'data:'.$productDetails[$index]['proof_purchase_type'].';base64,';
+                        $value = str_replace($base, '', $productDetails[$index]['proof_purchase']);
+                        Storage::disk('warranty_attachment')->put( $filename, base64_decode($value) );
 
-                    $jobData = [
-                        'filename' => Storage::disk('warranty_attachment')->path($filename),
-                        'id' => $info->id,
-                    ];
+                        $jobData = [
+                            'filename' => Storage::disk('warranty_attachment')->path($filename),
+                            'id' => $info->id,
+                        ];
 
-                    dispatch(new AttachmentJob($jobData));
+                        dispatch(new AttachmentJob($jobData));
+                    }
 
                     $productType[] = $productDetails[$index]['product_type']; 
 
