@@ -21,7 +21,6 @@ class WarrantyController extends Controller
         "contact_number" => "required",
         "email" => "required|email",
         "address" => "required",
-        "suburb" => "required",
         "city" => "required",
         "postcode" => "required",
         "dealer_name" => "required"
