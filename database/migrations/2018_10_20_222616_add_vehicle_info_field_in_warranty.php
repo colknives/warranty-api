@@ -14,10 +14,6 @@ class AddVehicleInfoFieldInWarranty extends Migration
     public function up()
     {
         Schema::table('warranties', function (Blueprint $table) {
-            $table->string('invoice_number', 50)->after('proof_purchase');
-        });
-
-        Schema::table('warranties', function (Blueprint $table) {
             $table->string('vehicle_registration', 50)->after('invoice_number');
         });
 
@@ -38,7 +34,7 @@ class AddVehicleInfoFieldInWarranty extends Migration
     public function down()
     {
         Schema::table('customer_tokens', function (Blueprint $table) {
-            $table->dropColumn(['invoice_number', 'vehicle_registration', 'vehicle_make', 'vehicle_model']);
+            $table->dropColumn(['vehicle_registration', 'vehicle_make', 'vehicle_model']);
         });
     }
 }
