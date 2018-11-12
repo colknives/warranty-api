@@ -6,3 +6,5 @@ Homestead.yaml
 
 /public/attachment/*
 /storage/attachment/*
+
+.htaccess
