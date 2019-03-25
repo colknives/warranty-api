@@ -15,8 +15,6 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-
-
 $router->group(["prefix" => "auth"], function() use ($router){
 
 	$router->get('/', ["as" => "auth.index", "uses" => "AuthController@index"]);
@@ -34,6 +32,8 @@ $router->group(["prefix" => "warranty"], function() use ($router){
 	$router->post('/save', ["as" => "warranty.save", "uses" => "WarrantyController@save"]);
 
 	$router->post('/type', ["as" => "warranty.type", "uses" => "WarrantyController@getTypeViaSerial"]);
+
+	$router->post('/check_serial_email', ["as" => "warranty.check_serial_email", "uses" => "WarrantyController@checkSerialEmail"]);
 
 });
 

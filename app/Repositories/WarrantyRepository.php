@@ -37,4 +37,16 @@ class WarrantyRepository extends CrudRepository
         parent::__construct("warranty", $model);
         $this->model = $model;
     }
+
+    /**
+     * Search warranty records
+     *
+     * @param $field
+     * @param $id
+     * @return mixed
+     */
+    public function searchWarranty($field, $value)
+    {
+        return $this->model->where($field, $value)->get();
+    }
 }

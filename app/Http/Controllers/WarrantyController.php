@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Jobs\AttachmentJob;
 use App\Mail\WelcomeMail;
 use Carbon\Carbon;
+use Validator;
 
 class WarrantyController extends Controller
 {
@@ -135,24 +136,31 @@ class WarrantyController extends Controller
     {
 
         $type = "";
-        $typeCode = substr($serialNumber, 0, 4);
+        // $typeCode = substr($serialNumber, 0, 4);
 
-        if( $typeCode == 'PCSU' ){
-            return 'Premium Care Synthetic';
-        }
+        // if( $typeCode == 'PCSU' ){
+        //     return 'Premium Care Synthetic';
+        // }
 
         $typeCode = substr($serialNumber, 0, 3);
 
-        if( $typeCode == 'PCL' ){
-            return 'Premium Care Leather';
-        }
-        elseif( $typeCode == 'PCO' ){
-            return 'Premium Care Outdoor';
-        }
-        elseif( $typeCode == 'DSL' ){
+        // if( $typeCode == 'PCL' ){
+        //     return 'Premium Care Leather';
+        // }
+        // elseif( $typeCode == 'PCO' ){
+        //     return 'Premium Care Outdoor';
+        // }
+        // elseif( $typeCode == 'PCF' ){
+        //     return 'Premium Care Fabric';
+        // }
+        if( $typeCode == 'DSL' ){
             return 'DURA SEAL Leather Protection';
-        }elseif( $typeCode == 'PCF' ){
-            return 'Premium Care Fabric';
+        }
+        elseif( $typeCode == 'DSP' ){
+            return 'DURA SEAL Paint Protection';
+        }
+        elseif( $typeCode == 'DSF' ){
+            return 'DURA SEAL Fabric Protection';
         }
 
         $typeCode = substr($serialNumber, 0, 2);
@@ -162,9 +170,6 @@ class WarrantyController extends Controller
         }
         elseif( $typeCode == 'LG' ){
             return 'Leather Guard';
-        }
-        elseif( $typeCode == 'DS' ){
-            return 'DURA SEAL Vehicle Protection';
         }
 
         return false;
@@ -376,5 +381,63 @@ class WarrantyController extends Controller
         }
 
         return ( ( $type == 'Soil Guard' && $typeCode == 'SG' ) || ( $type == 'Leather Guard' && $typeCode == 'LG' ) || ( $type == 'Premium Care Leather' && $typeCode == 'PCL' ) || ( $type == 'Premium Care Synthetic' && $typeCode == 'PCSU' ) || ( $type == 'Premium Care Outdoor' && $typeCode == 'PCO' ) || ( $type == 'DURA SEAL Vehicle Protection' && $typeCode == 'DS' ) || ( $type == 'DURA SEAL Leather Protection' && $typeCode == 'DSL' ) );
+    }
+
+    /**
+     * Check serial email.
+     *
+     * @return boolean
+     */
+    public function checkSerialEmail(Request $request)
+    {
+        //Check if sent data is email or serial
+        $validator = Validator::make($request->all(), [
+            'serial_email' => 'email'
+        ]);
+
+        $type = false;
+        $serial_type = false;
+
+        if( $validator->fails() ){
+
+            $identify = $this->identifyType($request->get('serial_email'));
+
+            if( $identify ){
+                $type = 'serial_number';
+                $serial_type = $identify;
+            }
+
+
+        }
+        else{
+            $type = 'email';
+        }
+
+        if( !$type ){
+            return response()->json([
+                "message" => __("messages.warranty.serial_email.404")
+            ], 404);   
+        }
+
+        $search = $this->warrantyRepository->searchWarranty($type, $request->get('serial_email'));
+        $count = count( $search );
+
+        if( $count == 0 ){
+            return response()->json([
+                "message" => __("messages.warranty.serial_email.".$type.".404"),
+                "type" => $type,
+                "serial_type" => $serial_type,
+                "count" => $count,
+                "data" => null
+            ], 200); 
+        }
+
+        return response()->json([
+            "message" => __("messages.warranty.serial_email.".$type.".200"),
+            "type" => $type,
+            "serial_type" => $serial_type,
+            "count" => $count,
+            "data" => $search
+        ], 200);   
     }
 }

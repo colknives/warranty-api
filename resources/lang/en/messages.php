@@ -17,6 +17,17 @@ return [
             "200" => "Serial successfully idetified",
             "404" => "Serial unsuccessfully idetified"
         ],
+        "serial_email" => [
+            "serial_number" => [
+                "200" => "Warranty successfully fetched",
+                "404" => "No warranty under serial number is found"
+            ],
+            "email" => [
+                "200" => "Warranty successfully fetched",
+                "404" => "No warranty under email is found"
+            ],
+            "404" => "The provided info is invalid"
+        ],
     ],
     "vehicle_info" => [
         "list" => [
