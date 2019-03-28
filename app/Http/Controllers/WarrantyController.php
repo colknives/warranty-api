@@ -185,21 +185,17 @@ class WarrantyController extends Controller
 
         $this->validate($request, static::CREATE_RULES);
 
-        $productDetails = $request->get('product_details');
         $exist = [];
         $invalid = [];
 
-        foreach( $productDetails as $key => $productDetail ){
-
-            if( $this->serialNumberExist($request->get('serial_number')) ){
-                if( !in_array($request->get('serial_number'), static::SAFE_SERIALS) ){
-                    $exist[] = $request->get('serial_number');
-                }
+        if( $this->serialNumberExist($request->get('serial_number')) ){
+            if( !in_array($request->get('serial_number'), static::SAFE_SERIALS) ){
+                $exist[] = $request->get('serial_number');
             }
+        }
 
-            if( !$this->serialNumberFormat($productDetail['product_type'], $productDetail['serial_number'], $productDetail['product_applied']) ){
-                $invalid[] = $productDetail['serial_number'];
-            }
+        if( !$this->serialNumberFormat($request->get('product_type'), $request->get('serial_number')) ){
+            $invalid[] = $request->get('serial_number');
         }
 
         if( count($exist) == 0 && count($invalid) == 0 ){
@@ -210,36 +206,31 @@ class WarrantyController extends Controller
 
             $claimNo = rand(100001, 999999);
 
-            foreach( $productDetails as $key => $productDetail ){
-
-                $data[] = [
-                    'Registration Number' => $claimNo,
-                    'Status' => 'Pending',
-                    'Name' => $request->get('firstname').' '.$request->get('lastname'),
-                    'First Name' => $request->get('firstname'),
-                    'Last Name' => $request->get('lastname'),
-                    'Email' => $request->get('email'),
-                    'Secondary Email' => '',
-                    'Address Line 1' => $request->get('address'),
-                    'Address Line 2' => '',
-                    'Contact Number' => $request->get('contact_number'),
-                    'City' => $request->get('city'),
-                    'Suburb/Town/Province' => $request->get('suburb'),
-                    'Zip Code' => $request->get('postcode'),
-                    'Country' => $request->get('country'),
-                    'Invoice Number' => $productDetail['invoice_number'],
-                    'Serial Number' => $productDetail['serial_number'],
-                    'Purchase Date' => Carbon::parse($productDetail['purchase_date'])->format('m/d/Y'),
-                    'Product Type' => $productDetail['product_type'],
-                    'Product Applied' => ( is_array($productDetail['product_applied']) )? implode(', ', $productDetail['product_applied']) : $productDetail['product_applied'],
-                    'Vehicle Registration' => $productDetail['vehicle_registration'],
-                    'Make' => $productDetail['vehicle_make'],
-                    'Model' => $productDetail['vehicle_model'],
-                    'Dealer Name' => $request->get('dealer_name'),
-                    'Dealer Address' => $request->get('dealer_location')
-                ];
-
-            }
+            $data[] = [
+                'Registration Number' => $claimNo,
+                'Status' => 'Pending',
+                'Name' => $request->get('firstname').' '.$request->get('lastname'),
+                'First Name' => $request->get('firstname'),
+                'Last Name' => $request->get('lastname'),
+                'Email' => $request->get('email'),
+                'Secondary Email' => '',
+                'Address Line 1' => $request->get('address'),
+                'Address Line 2' => '',
+                'Contact Number' => $request->get('contact_number'),
+                'City' => $request->get('city'),
+                'Suburb/Town/Province' => $request->get('suburb'),
+                'Zip Code' => $request->get('postcode'),
+                'Country' => $request->get('country'),
+                'Invoice Number' => $request->get('invoice_number'),
+                'Serial Number' => $request->get('serial_number'),
+                'Product Type' => $request->get('product_type'),
+                'Product Applied' => ( $request->get('product_applied') == 'Yes' )? 'Fabric Protection' : '',
+                'Vehicle Registration' => $request->get('vehicle_registration'),
+                'Make' => $request->get('vehicle_make'),
+                'Model' => $request->get('vehicle_model'),
+                'Dealer Name' => $request->get('dealer_name'),
+                'Dealer Address' => $request->get('dealer_location')
+            ];
 
             $create = $this->warranty->save($data);
 
@@ -247,43 +238,7 @@ class WarrantyController extends Controller
 
                 foreach( $create->model as $key => $info ){
 
-                    $index = $key - 1;
-                    $filename = str_random('18') . Carbon::now()->timestamp;
-
-                    if( $productDetails[$index]['proof_purchase_type'] == 'image/jpeg' ){
-                        $filename = $filename.'.jpg';
-                    }
-                    elseif( $productDetails[$index]['proof_purchase_type'] == 'image/png' ){
-                        $filename = $filename.'.png';
-                    }
-                    elseif( $productDetails[$index]['proof_purchase_type'] == 'application/pdf' ){
-                        $filename = $filename.'.pdf';
-                    }
-                    elseif( $productDetails[$index]['proof_purchase_type'] == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ){
-                        $filename = $filename.'.docx';
-                    }
-                    elseif( $productDetails[$index]['proof_purchase_type'] == 'application/msword' ){
-                        $filename = $filename.'.doc';
-                    }
-                    else{
-                        $filename = '';
-                    }
-
-                    if( $filename != '' ){
-                        $base = 'data:'.$productDetails[$index]['proof_purchase_type'].';base64,';
-                        $value = str_replace($base, '', $productDetails[$index]['proof_purchase']);
-                        Storage::disk('warranty_attachment')->put( $filename, base64_decode($value) );
-
-                        $jobData = [
-                            'filename' => Storage::disk('warranty_attachment')->path($filename),
-                            'mimetype' => $productDetails[$index]['proof_purchase_type'],
-                            'id' => $info->id,
-                        ];
-
-                        dispatch(new AttachmentJob($jobData));
-                    }
-
-                    $productType[] = $productDetails[$index]['product_type']; 
+                    $productType = $request->get('product_type'); 
 
                     $localData = [
                         'claim_no' => $claimNo,
@@ -296,17 +251,14 @@ class WarrantyController extends Controller
                         'suburb' => $request->get('suburb'),
                         'postcode' => $request->get('postcode'),
                         'country' => $request->get('country'),
-                        'invoice_number' => $productDetails[$index]['invoice_number'],
-                        'vehicle_registration' => $productDetails[$index]['vehicle_registration'],
-                        'vehicle_make' => $productDetails[$index]['vehicle_make'],
-                        'vehicle_model' => $productDetails[$index]['vehicle_model'],
-                        'serial_number' => $productDetails[$index]['serial_number'],
-                        'purchase_date' => Carbon::parse($productDetails[$index]['purchase_date'])->format('Y-m-d'),
-                        'product_type' => $productDetails[$index]['product_type'],
-                        'product_applied' => ( is_array($productDetails[$index]['product_applied']) )? implode(', ', $productDetails[$index]['product_applied']) : $productDetails[$index]['product_applied'],
-                        'proof_purchase' => $filename,
-                        'dealer_name' => $request->get('dealer_name'),
-                        'dealer_location' => $request->get('dealer_location'),
+                        'invoice_number' => $request->get('invoice_number'),
+                        'vehicle_registration' => $request->get('vehicle_registration'),
+                        'vehicle_make' => $request->get('vehicle_make'),
+                        'vehicle_model' => $request->get('vehicle_model'),
+                        'serial_number' => $request->get('serial_number'),
+                        'product_type' => $request->get('product_type'),
+                        'product_applied' => $request->get('product_applied'),
+                        'dealer_name' => $request->get('dealer_name')
                     ];
 
                     $saveLocal = $this->warrantyRepository->create($localData);
@@ -315,7 +267,7 @@ class WarrantyController extends Controller
 
 
             Mail::to($request->get('email'))
-                        ->send(new WelcomeMail( $request->get('firstname').' '.$request->get('lastname'), $claimNo, implode(',', $productType) ));
+                        ->send(new WelcomeMail( $request->get('firstname').' '.$request->get('lastname'), $claimNo, $productType ));
 
             return response()->json([
                 "message" => __("messages.warranty.create.200"),
@@ -536,7 +488,7 @@ class WarrantyController extends Controller
      *
      * @return boolean
      */
-    public function serialNumberFormat($type, $serialNumber, $productApplied)
+    public function serialNumberFormat($type, $serialNumber)
     {
         $valid = true;
 
