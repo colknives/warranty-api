@@ -31,12 +31,13 @@ class Warranty extends Model
         "postcode",
         "country",
         "serial_number",
-        "purchase_date",
         "product_type",
         "product_applied",
-        "proof_purchase",
         "dealer_name",
-        "dealer_location"
+        "invoice_number",
+        "vehicle_registration",
+        "vehicle_make",
+        "vehicle_model"
     ];
 
     /**
@@ -54,12 +55,13 @@ class Warranty extends Model
         "postcode",
         "country",
         "serial_number",
-        "purchase_date",
         "product_type",
         "product_applied",
-        "proof_purchase",
         "dealer_name",
-        "dealer_location"
+        "invoice_number",
+        "vehicle_registration",
+        "vehicle_make",
+        "vehicle_model"
     ];
 
     /**

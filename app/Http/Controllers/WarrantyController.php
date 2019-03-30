@@ -236,8 +236,6 @@ class WarrantyController extends Controller
 
             if( $create->status == 200 ){
 
-                foreach( $create->model as $key => $info ){
-
                     $productType = $request->get('product_type'); 
 
                     $localData = [
@@ -257,12 +255,12 @@ class WarrantyController extends Controller
                         'vehicle_model' => $request->get('vehicle_model'),
                         'serial_number' => $request->get('serial_number'),
                         'product_type' => $request->get('product_type'),
-                        'product_applied' => $request->get('product_applied'),
+                        'product_applied' => ( $request->get('product_applied') == 'Yes' )? 'Fabric Protection' : '',
                         'dealer_name' => $request->get('dealer_name')
                     ];
 
                     $saveLocal = $this->warrantyRepository->create($localData);
-                }
+
             }
 
 
