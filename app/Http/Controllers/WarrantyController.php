@@ -52,7 +52,8 @@ class WarrantyController extends Controller
         "PCFTESTER",
         "SGTESTER",
         "LGTESTER",
-        "DSTESTER"
+        "DSFTESTER",
+        "DSPTESTER"
     ];
 
 
@@ -527,7 +528,6 @@ class WarrantyController extends Controller
                 $serial_type = $identify;
             }
 
-
         }
         else{
             $type = 'email';
@@ -540,14 +540,26 @@ class WarrantyController extends Controller
         }
 
         $search = $this->warrantyRepository->searchWarranty($type, $request->get('serial_email'));
+        $searchZoho = $this->serialNumberExist($request->get('serial_email'));
         $count = count( $search );
 
-        if( $count == 0 ){
+        if( $count == 0 || $searchZoho == false ){
+
             return response()->json([
                 "message" => __("messages.warranty.serial_email.".$type.".404"),
                 "type" => $type,
                 "serial_type" => $serial_type,
-                "count" => $count,
+                "count" => 0,
+                "data" => null
+            ], 200); 
+        }
+
+        if( in_array($request->get('serial_email'), static::SAFE_SERIALS) ){
+            return response()->json([
+                "message" => __("messages.warranty.serial_email.".$type.".404"),
+                "type" => $type,
+                "serial_type" => $serial_type,
+                "count" => 0,
                 "data" => null
             ], 200); 
         }
