@@ -266,7 +266,7 @@ class WarrantyController extends Controller
 
 
             Mail::to($request->get('email'))
-                        ->send(new WelcomeMail( $request->get('firstname').' '.$request->get('lastname'), $claimNo, $productType ));
+                        ->send(new WelcomeMail( $request->get('firstname').' '.$request->get('lastname'), $claimNo, $productType, $request->get('serial_number') ));
 
             return response()->json([
                 "message" => __("messages.warranty.create.200"),
