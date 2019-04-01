@@ -29,8 +29,9 @@ class CreateWarrantiesTable extends Migration
             $table->string('serial_number',50)->nullable();
             $table->date('purchase_date')->nullable();
             $table->enum('product_type', [
-                'DURA SEAL Vehicle Protection', 
-                'DURA SEAL Leather Protection'.
+                'DURA SEAL Paint Protection', 
+                'DURA SEAL Fabric Protection', 
+                'DURA SEAL Leather Protection',
                 'Premium Care Fabric',
                 'Premium Care Leather',
                 'Premium Care Synthetic',

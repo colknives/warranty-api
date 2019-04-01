@@ -266,7 +266,7 @@ class WarrantyController extends Controller
 
 
             Mail::to($request->get('email'))
-                        ->send(new WelcomeMail( $request->get('firstname').' '.$request->get('lastname'), $claimNo, $productType ));
+                        ->send(new WelcomeMail( $request->get('firstname').' '.$request->get('lastname'), $claimNo, $productType, $request->get('serial_number') ));
 
             return response()->json([
                 "message" => __("messages.warranty.create.200"),
@@ -543,8 +543,8 @@ class WarrantyController extends Controller
         $searchZoho = $this->serialNumberExist($request->get('serial_email'));
         $count = count( $search );
 
-        if( $count == 0 || $searchZoho == false ){
-
+        // if( $count == 0 || $searchZoho == false ){
+        if( $count == 0 ){
             return response()->json([
                 "message" => __("messages.warranty.serial_email.".$type.".404"),
                 "type" => $type,
