@@ -483,6 +483,53 @@ class WarrantyController extends Controller
     }
 
     /**
+     * Email exist instance.
+     *
+     * @return boolean
+     */
+    public function emailExist($email)
+    {
+        $data = [
+            'Email' => $email
+        ];
+
+        $search = $this->warranty->search($data);
+
+        return ( $search->status == 200 )? false : false;
+    }
+
+    /**
+     * Search exist instance.
+     *
+     * @return boolean
+     */
+    public function searchExist($type, $value)
+    {
+
+        $searchType = false;
+
+        switch ($type) {
+            case 'email':
+                $searchType = 'Email';
+                break;
+            
+            case 'serial_number':
+                $searchType = 'Serial Number';
+                break;
+        }
+
+        if( !$searchType ){
+            return false;
+        }
+
+        $data[$searchType] = $value;
+
+        $search = $this->warranty->search($data);
+
+        return ( $search->status == 200 )? array_column($search->model, 'data') : false;
+    }
+
+    /**
      * Serial number check format instance.
      *
      * @return boolean
@@ -539,12 +586,11 @@ class WarrantyController extends Controller
             ], 404);   
         }
 
-        $search = $this->warrantyRepository->searchWarranty($type, $request->get('serial_email'));
-        $searchZoho = $this->serialNumberExist($request->get('serial_email'));
-        $count = count( $search );
+        // $search = $this->warrantyRepository->searchWarranty($type, $request->get('serial_email'));
+        $searchZoho = $this->searchExist($type, $request->get('serial_email'));
 
         // if( $count == 0 || $searchZoho == false ){
-        if( $count == 0 ){
+        if( $searchZoho == false ){
             return response()->json([
                 "message" => __("messages.warranty.serial_email.".$type.".404"),
                 "type" => $type,
@@ -568,8 +614,8 @@ class WarrantyController extends Controller
             "message" => __("messages.warranty.serial_email.".$type.".200"),
             "type" => $type,
             "serial_type" => $serial_type,
-            "count" => $count,
-            "data" => $search
+            "count" => count($searchZoho),
+            "data" => $searchZoho
         ], 200);   
     }
 }
