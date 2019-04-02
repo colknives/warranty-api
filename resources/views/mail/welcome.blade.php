@@ -234,7 +234,7 @@ td[class="spechide"]
                                     <strong>Greetings from TF GROUP Warranty Team</strong>.Your registration is now being reviewed and we will be sending you a letter of warranty acceptance shortly once the registration has been approved. 
                                     <br>
                                     <br>
-                                    <h2>Your serial no. is {{ $serialNumber }}</h2><br/>
+                                    <h2>Your warranty no. is {{ $serialNumber }}</h2><br/>
                                     <p>In the mean time, feel free to visit our website at <a href="http://www.tfgroup.co.nz">www.tfgroup.co.nz</a> for more details. 
                                      <br/><br/> 
                                       To ensure delivery to your inbox, add <a href="mailto:warranty@tfgroup.co.nz">warranty@tfgroup.co.nz</a> to your address book/contacts.Have questions? Get in touch with us via Facebook or email our support team.</p>
