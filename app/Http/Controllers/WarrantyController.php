@@ -140,7 +140,7 @@ class WarrantyController extends Controller
         $typeCode = substr($serialNumber, 0, 4);
 
         if( $typeCode == 'PCSU' ){
-            return 'Premium Care Synthetic';
+            return 'Premium Care Synthetic Upholstery';
         }
 
         $typeCode = substr($serialNumber, 0, 3);
@@ -596,7 +596,8 @@ class WarrantyController extends Controller
                 "type" => $type,
                 "serial_type" => $serial_type,
                 "count" => 0,
-                "data" => null
+                "data" => null,
+                "test_account" => 0
             ], 200); 
         }
 
@@ -606,8 +607,17 @@ class WarrantyController extends Controller
                 "type" => $type,
                 "serial_type" => $serial_type,
                 "count" => 0,
-                "data" => null
+                "data" => null,
+                "test_account" => 1
             ], 200); 
+        }
+
+        $testData = 0;
+
+        foreach( $searchZoho as $key => $zohoInfo ){
+            if( in_array($zohoInfo['Serial Number'], static::SAFE_SERIALS) ){
+                $testData = 1;
+            }
         }
 
         return response()->json([
@@ -615,7 +625,8 @@ class WarrantyController extends Controller
             "type" => $type,
             "serial_type" => $serial_type,
             "count" => count($searchZoho),
-            "data" => $searchZoho
+            "data" => $searchZoho,
+            "test_account" => $testData
         ], 200);   
     }
 }
