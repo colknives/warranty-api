@@ -591,13 +591,20 @@ class WarrantyController extends Controller
 
         // if( $count == 0 || $searchZoho == false ){
         if( $searchZoho == false ){
+
+            $testData = 0;
+
+            if( in_array($request->get('serial_email'), static::SAFE_SERIALS) ){
+                $testData = 1;
+            }
+
             return response()->json([
                 "message" => __("messages.warranty.serial_email.".$type.".404"),
                 "type" => $type,
                 "serial_type" => $serial_type,
                 "count" => 0,
                 "data" => null,
-                "test_account" => 0
+                "test_account" => $testData
             ], 200); 
         }
 
