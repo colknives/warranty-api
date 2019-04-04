@@ -350,7 +350,7 @@ class WarrantyController extends Controller
                     'Country' => $request->get('country'),
                     'Invoice Number' => $productDetail['invoice_number'],
                     'Serial Number' => $productDetail['serial_number'],
-                    'Purchase Date' => Carbon::parse($productDetail['purchase_date'])->format('m/d/Y'),
+                    'Date Registered' => Carbon::now()->format('m/d/Y'),
                     'Product Type' => $productDetail['product_type'],
                     'Product Applied' => ( is_array($productDetail['product_applied']) )? implode(', ', $productDetail['product_applied']) : $productDetail['product_applied'],
                     'Vehicle Registration' => $productDetail['vehicle_registration'],
