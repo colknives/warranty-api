@@ -64,7 +64,7 @@ class WelcomeMail extends Mailable
         return $this->subject('Thank you for Registering your Product')
                     ->view('mail.welcome')
                     ->with([
-                        'name' => $this->name,
+                        'name' => ucwords($this->name),
                         'claim' => $this->claim,
                         'productType' => $this->productType,
                         'serialNumber' => $this->serialNumber
