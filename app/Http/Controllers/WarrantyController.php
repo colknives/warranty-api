@@ -548,7 +548,7 @@ class WarrantyController extends Controller
             $typeCode = substr($serialNumber, 0, 4);
         }
 
-        return ( ( $type == 'Soil Guard' && $typeCode == 'SG' ) || ( $type == 'Leather Guard' && $typeCode == 'LG' ) || ( $type == 'Premium Care Leather' && $typeCode == 'PCL' ) || ( $type == 'Premium Care Synthetic' && $typeCode == 'PCSU' ) || ( $type == 'Premium Care Outdoor' && $typeCode == 'PCO' ) || ( $type == 'DURA SEAL Paint Protection' && $typeCode == 'DSP' ) || ( $type == 'DURA SEAL Leather Protection' && $typeCode == 'DSL' ) || ( $type == 'DURA SEAL Fabric Protection' && $typeCode == 'DSF' ) );
+        return ( ( $type == 'Soil Guard' && $typeCode == 'SG' ) || ( $type == 'Leather Guard' && $typeCode == 'LG' ) || ( $type == 'Premium Care Leather' && $typeCode == 'PCL' ) || ( $type == 'Premium Care Synthetic Upholstery' && $typeCode == 'PCSU' ) || ( $type == 'Premium Care Outdoor' && $typeCode == 'PCO' ) || ( $type == 'Premium Care Fabric' && $typeCode == 'PCF' ) || ( $type == 'DURA SEAL Paint Protection' && $typeCode == 'DSP' ) || ( $type == 'DURA SEAL Leather Protection' && $typeCode == 'DSL' ) || ( $type == 'DURA SEAL Fabric Protection' && $typeCode == 'DSF' ) );
     }
 
     /**
