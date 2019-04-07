@@ -52,7 +52,8 @@ class WarrantyController extends Controller
         "PCFTESTER",
         "SGTESTER",
         "LGTESTER",
-        "DSTESTER"
+        "DSFTESTER",
+        "DSPTESTER"
     ];
 
 
@@ -139,7 +140,7 @@ class WarrantyController extends Controller
         $typeCode = substr($serialNumber, 0, 4);
 
         if( $typeCode == 'PCSU' ){
-            return 'Premium Care Synthetic';
+            return 'Premium Care Synthetic Upholstery';
         }
 
         $typeCode = substr($serialNumber, 0, 3);
@@ -265,177 +266,7 @@ class WarrantyController extends Controller
 
 
             Mail::to($request->get('email'))
-                        ->send(new WelcomeMail( $request->get('firstname').' '.$request->get('lastname'), $claimNo, $productType ));
-
-            return response()->json([
-                "message" => __("messages.warranty.create.200"),
-                "data" => $data
-            ]);
-        }
-
-        if( count($invalid) > 0  ){
-
-            $data = [
-                'serial' => implode(', ', $invalid)
-            ];
-
-            return response()->json([
-                "message" => __("messages.warranty.serial.invalid", $data),
-                "data" => null
-            ], 404); 
-        }
-
-        $data = [
-            'serial' => implode(', ', $exist)
-        ];
-
-        return response()->json([
-            "message" => __("messages.warranty.serial.exist", $data),
-            "data" => null
-        ], 404);     
-    }
-
-    /**
-     * Save warranty instance.
-     *
-     * @return response
-     */
-    public function saveOld(Request $request)
-    {
-
-        $this->validate($request, static::CREATE_RULES);
-
-        $productDetails = $request->get('product_details');
-        $exist = [];
-        $invalid = [];
-
-        foreach( $productDetails as $key => $productDetail ){
-
-            if( $this->serialNumberExist($productDetail['serial_number']) ){
-                if( !in_array($productDetail['serial_number'], static::SAFE_SERIALS) ){
-                    $exist[] = $productDetail['serial_number'];
-                }
-            }
-
-            if( !$this->serialNumberFormat($productDetail['product_type'], $productDetail['serial_number'], $productDetail['product_applied']) ){
-                $invalid[] = $productDetail['serial_number'];
-            }
-        }
-
-        if( count($exist) == 0 && count($invalid) == 0 ){
-
-            $data = [];
-            $localData = [];
-            $productType = [];
-
-            $claimNo = rand(100001, 999999);
-
-            foreach( $productDetails as $key => $productDetail ){
-
-                $data[] = [
-                    'Registration Number' => $claimNo,
-                    'Status' => 'Pending',
-                    'Name' => $request->get('firstname').' '.$request->get('lastname'),
-                    'First Name' => $request->get('firstname'),
-                    'Last Name' => $request->get('lastname'),
-                    'Email' => $request->get('email'),
-                    'Secondary Email' => '',
-                    'Address Line 1' => $request->get('address'),
-                    'Address Line 2' => '',
-                    'Contact Number' => $request->get('contact_number'),
-                    'City' => $request->get('city'),
-                    'Suburb/Town/Province' => $request->get('suburb'),
-                    'Zip Code' => $request->get('postcode'),
-                    'Country' => $request->get('country'),
-                    'Invoice Number' => $productDetail['invoice_number'],
-                    'Serial Number' => $productDetail['serial_number'],
-                    'Purchase Date' => Carbon::parse($productDetail['purchase_date'])->format('m/d/Y'),
-                    'Product Type' => $productDetail['product_type'],
-                    'Product Applied' => ( is_array($productDetail['product_applied']) )? implode(', ', $productDetail['product_applied']) : $productDetail['product_applied'],
-                    'Vehicle Registration' => $productDetail['vehicle_registration'],
-                    'Make' => $productDetail['vehicle_make'],
-                    'Model' => $productDetail['vehicle_model'],
-                    'Dealer Name' => $request->get('dealer_name'),
-                    'Dealer Address' => $request->get('dealer_location')
-                ];
-
-            }
-
-            $create = $this->warranty->save($data);
-
-            if( $create->status == 200 ){
-
-                foreach( $create->model as $key => $info ){
-
-                    $index = $key - 1;
-                    $filename = str_random('18') . Carbon::now()->timestamp;
-
-                    if( $productDetails[$index]['proof_purchase_type'] == 'image/jpeg' ){
-                        $filename = $filename.'.jpg';
-                    }
-                    elseif( $productDetails[$index]['proof_purchase_type'] == 'image/png' ){
-                        $filename = $filename.'.png';
-                    }
-                    elseif( $productDetails[$index]['proof_purchase_type'] == 'application/pdf' ){
-                        $filename = $filename.'.pdf';
-                    }
-                    elseif( $productDetails[$index]['proof_purchase_type'] == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ){
-                        $filename = $filename.'.docx';
-                    }
-                    elseif( $productDetails[$index]['proof_purchase_type'] == 'application/msword' ){
-                        $filename = $filename.'.doc';
-                    }
-                    else{
-                        $filename = '';
-                    }
-
-                    if( $filename != '' ){
-                        $base = 'data:'.$productDetails[$index]['proof_purchase_type'].';base64,';
-                        $value = str_replace($base, '', $productDetails[$index]['proof_purchase']);
-                        Storage::disk('warranty_attachment')->put( $filename, base64_decode($value) );
-
-                        $jobData = [
-                            'filename' => Storage::disk('warranty_attachment')->path($filename),
-                            'mimetype' => $productDetails[$index]['proof_purchase_type'],
-                            'id' => $info->id,
-                        ];
-
-                        dispatch(new AttachmentJob($jobData));
-                    }
-
-                    $productType[] = $productDetails[$index]['product_type']; 
-
-                    $localData = [
-                        'claim_no' => $claimNo,
-                        'firstname' => $request->get('firstname'),
-                        'lastname' => $request->get('lastname'),
-                        'email' => $request->get('email'),
-                        'address' => $request->get('address'),
-                        'contact_number' => $request->get('contact_number'),
-                        'city' => $request->get('city'),
-                        'suburb' => $request->get('suburb'),
-                        'postcode' => $request->get('postcode'),
-                        'country' => $request->get('country'),
-                        'invoice_number' => $productDetails[$index]['invoice_number'],
-                        'vehicle_registration' => $productDetails[$index]['vehicle_registration'],
-                        'vehicle_make' => $productDetails[$index]['vehicle_make'],
-                        'vehicle_model' => $productDetails[$index]['vehicle_model'],
-                        'serial_number' => $productDetails[$index]['serial_number'],
-                        'purchase_date' => Carbon::parse($productDetails[$index]['purchase_date'])->format('Y-m-d'),
-                        'product_type' => $productDetails[$index]['product_type'],
-                        'product_applied' => ( is_array($productDetails[$index]['product_applied']) )? implode(', ', $productDetails[$index]['product_applied']) : $productDetails[$index]['product_applied'],
-                        'proof_purchase' => $filename,
-                        'dealer_name' => $request->get('dealer_name'),
-                        'dealer_location' => $request->get('dealer_location'),
-                    ];
-
-                    $saveLocal = $this->warrantyRepository->create($localData);
-                }
-            }
-
-
-            Mail::to($request->get('email'))
-                        ->send(new WelcomeMail( $request->get('firstname').' '.$request->get('lastname'), $claimNo, implode(',', $productType) ));
+                        ->send(new WelcomeMail( $request->get('firstname').' '.$request->get('lastname'), $claimNo, $productType, $request->get('serial_number') ));
 
             return response()->json([
                 "message" => __("messages.warranty.create.200"),
@@ -482,6 +313,53 @@ class WarrantyController extends Controller
     }
 
     /**
+     * Email exist instance.
+     *
+     * @return boolean
+     */
+    public function emailExist($email)
+    {
+        $data = [
+            'Email' => $email
+        ];
+
+        $search = $this->warranty->search($data);
+
+        return ( $search->status == 200 )? false : false;
+    }
+
+    /**
+     * Search exist instance.
+     *
+     * @return boolean
+     */
+    public function searchExist($type, $value)
+    {
+
+        $searchType = false;
+
+        switch ($type) {
+            case 'email':
+                $searchType = 'Email';
+                break;
+            
+            case 'serial_number':
+                $searchType = 'Serial Number';
+                break;
+        }
+
+        if( !$searchType ){
+            return false;
+        }
+
+        $data[$searchType] = $value;
+
+        $search = $this->warranty->search($data);
+
+        return ( $search->status == 200 )? array_column($search->model, 'data') : false;
+    }
+
+    /**
      * Serial number check format instance.
      *
      * @return boolean
@@ -500,16 +378,48 @@ class WarrantyController extends Controller
             $typeCode = substr($serialNumber, 0, 4);
         }
 
-        return ( ( $type == 'Soil Guard' && $typeCode == 'SG' ) || ( $type == 'Leather Guard' && $typeCode == 'LG' ) || ( $type == 'Premium Care Leather' && $typeCode == 'PCL' ) || ( $type == 'Premium Care Synthetic' && $typeCode == 'PCSU' ) || ( $type == 'Premium Care Outdoor' && $typeCode == 'PCO' ) || ( $type == 'DURA SEAL Paint Protection' && $typeCode == 'DSP' ) || ( $type == 'DURA SEAL Leather Protection' && $typeCode == 'DSL' ) || ( $type == 'DURA SEAL Fabric Protection' && $typeCode == 'DSF' ) );
+        return ( ( $type == 'Soil Guard' && $typeCode == 'SG' ) || ( $type == 'Leather Guard' && $typeCode == 'LG' ) || ( $type == 'Premium Care Leather' && $typeCode == 'PCL' ) || ( $type == 'Premium Care Synthetic Upholstery' && $typeCode == 'PCSU' ) || ( $type == 'Premium Care Outdoor' && $typeCode == 'PCO' ) || ( $type == 'Premium Care Fabric' && $typeCode == 'PCF' ) || ( $type == 'DURA SEAL Paint Protection' && $typeCode == 'DSP' ) || ( $type == 'DURA SEAL Leather Protection' && $typeCode == 'DSL' ) || ( $type == 'DURA SEAL Fabric Protection' && $typeCode == 'DSF' ) );
     }
 
     /**
+     * Check range instance.
+     *
+     * @return boolean
+     */
+    public function checkRangeFormat($serialNumber)
+    {
+        $valid = true;
+        $type = $this->identifyType($serialNumber);
+
+        if( in_array($type, ['Soil Guard', 'Leather Guard']) ){
+            $typeCode = substr($serialNumber, 0, 2);
+        }
+        elseif( in_array($type, ['DURA SEAL Leather Protection', 'DURA SEAL Paint Protection', 'DURA SEAL Fabric Protection', 'Premium Care Leather', 'Premium Care Fabric', 'Premium Care Outdoor']) ){
+            $typeCode = substr($serialNumber, 0, 3);
+        }
+        else{
+            $typeCode = substr($serialNumber, 0, 4);
+        }
+
+        $serialCode = str_replace($typeCode, '', $serialNumber);
+        $serialCode = ( float ) $serialCode;
+
+        if( in_array($type, ['DURA SEAL Leather Protection', 'DURA SEAL Paint Protection', 'DURA SEAL Fabric Protection']) ){
+            return ( ( $type == 'DURA SEAL Leather Protection' && ( $serialCode > env('DURA_SEAL_LEATHER_START') && $serialCode < env('DURA_SEAL_LEATHER_END')  ) ) || ( $type == 'DURA SEAL Fabric Protection' && ( $serialCode > env('DURA_SEAL_FABRIC_START') && $serialCode < env('DURA_SEAL_FABRIC_END')  ) ) || ( $type == 'DURA SEAL Paint Protection' && ( $serialCode > env('DURA_SEAL_PAINT_START') && $serialCode < env('DURA_SEAL_PAINT_END')  ) ) );
+        }
+        else{
+            return true;
+        } 
+    }
+
+    /**checkRangeFormat
      * Check serial email.
      *
      * @return boolean
      */
     public function checkSerialEmail(Request $request)
     {
+        
         //Check if sent data is email or serial
         $validator = Validator::make($request->all(), [
             'serial_email' => 'email'
@@ -527,7 +437,6 @@ class WarrantyController extends Controller
                 $serial_type = $identify;
             }
 
-
         }
         else{
             $type = 'email';
@@ -539,25 +448,69 @@ class WarrantyController extends Controller
             ], 404);   
         }
 
-        $search = $this->warrantyRepository->searchWarranty($type, $request->get('serial_email'));
-        $count = count( $search );
+        // $search = $this->warrantyRepository->searchWarranty($type, $request->get('serial_email'));
+        $searchZoho = $this->searchExist($type, $request->get('serial_email'));
 
-        if( $count == 0 ){
+        if( ( !in_array($request->get('serial_email'), static::SAFE_SERIALS) ) && ( !$this->checkRangeFormat($request->get('serial_email')) ) ){
+            return response()->json([
+                "message" => __("messages.warranty.serial_email.serial_number.range_invalid"),
+                "type" => $type,
+                "serial_type" => $serial_type,
+                "count" => 0,
+                "data" => null,
+                "test_account" => 0,
+                "invalid_range" => 1
+            ], 200); 
+        }
+
+        // if( $count == 0 || $searchZoho == false ){
+        if( $searchZoho == false ){
+
+            $testData = 0;
+
+            if( in_array($request->get('serial_email'), static::SAFE_SERIALS) ){
+                $testData = 1;
+            }
+
             return response()->json([
                 "message" => __("messages.warranty.serial_email.".$type.".404"),
                 "type" => $type,
                 "serial_type" => $serial_type,
-                "count" => $count,
-                "data" => null
+                "count" => 0,
+                "data" => null,
+                "test_account" => $testData,
+                "invalid_range" => 0
             ], 200); 
+        }
+
+        if( in_array($request->get('serial_email'), static::SAFE_SERIALS) ){
+            return response()->json([
+                "message" => __("messages.warranty.serial_email.".$type.".404"),
+                "type" => $type,
+                "serial_type" => $serial_type,
+                "count" => 0,
+                "data" => null,
+                "test_account" => 1,
+                "invalid_range" => 0
+            ], 200); 
+        }
+
+        $testData = 0;
+
+        foreach( $searchZoho as $key => $zohoInfo ){
+            if( in_array($zohoInfo['Serial Number'], static::SAFE_SERIALS) ){
+                $testData = 1;
+            }
         }
 
         return response()->json([
             "message" => __("messages.warranty.serial_email.".$type.".200"),
             "type" => $type,
             "serial_type" => $serial_type,
-            "count" => $count,
-            "data" => $search
+            "count" => count($searchZoho),
+            "data" => $searchZoho,
+            "test_account" => $testData,
+            "invalid_range" => 0
         ], 200);   
     }
 }

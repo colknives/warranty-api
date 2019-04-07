@@ -215,12 +215,7 @@ td[class="spechide"]
                           <tr><td height='55'></td></tr>
                           <tr>
                             <td align='left'>
-                              <p>Hello {{ $name }},</p>
-                              <div class="contentEditableContainer contentTextEditable">
-                                <div class="contentEditable" align='center'>
-                                  <h2 >Thank you for Registering your {{ $productType }} Product!</h2>
-                                </div>
-                              </div>
+                              <p><strong>Hi {{ $name }},</strong></p>
                             </td>
                           </tr>
 
@@ -231,18 +226,25 @@ td[class="spechide"]
                               <div class="contentEditableContainer contentTextEditable">
                                 <div class="contentEditable" align='center'>
                                   <p >
-                                    <strong>Greetings from TF GROUP Warranty Team</strong>.Your registration is now being reviewed and we will be sending you a letter of warranty acceptance shortly once the registration has been approved. 
+                                    Greetings from the team at TF GROUP Ltd.
+                                    <br />
+                                    Your registration has been received and is now being reviewed. We will be emailing you a letter of warranty acceptance shortly once all details have been verified.
+                                    <br />
+                                    <br />
+                                    Your warranty number is {{ $serialNumber }}
+                                    <br />
+                                    <br/>
+                                    <p>In the meantime, feel free to visit our website <a href="http://www.tfgroup.co.nz">www.tfgroup.co.nz</a> for futher information. 
+                                     <br/>
+                                      To make sure that the acceptance email is delivered to your inbox please add <a href="mailto:warranty@tfgroup.co.nz">warranty@tfgroup.co.nz</a> to your contact list as it may otherwise end up in your SPAM or Junk box.</p>
                                     <br>
                                     <br>
-                                    <h2>Your warranty registration no. is {{ $claim }}</h2><br/>
-                                    <p>In the mean time, feel free to visit our website at <a href="http://www.tfgroup.co.nz">www.tfgroup.co.nz</a> for more details. 
-                                     <br/><br/> 
-                                      To ensure delivery to your inbox, add <a href="mailto:warranty@tfgroup.co.nz">warranty@tfgroup.co.nz</a> to your address book/contacts.Have questions? Get in touch with us via Facebook or email our support team.</p>
+                                    <p>If you have any questions in the meantime you can contact us via our support team at <a href="mailto:info@tfgroup.co.nz">info@tfgroup.co.nz</a> or via <a href="https://www.tfgroup.co.nz/pages/contact-us">Contact page on our website.</a></p>
+                                    <br />
+                                    <br />
+                                    <p>Thanks and regards,</p>
                                     <br>
-                                    <br>
-                                    <p>Cheers,</p>
-                                    <br>
-                                    <p><span style='color:#222222;'>The Warranties Team</span></p>
+                                    <p><span style='color:#222222;'>The Team at TF GROUP</span></p>
                                   </p>
                                 </div>
                               </div>
@@ -268,9 +270,9 @@ td[class="spechide"]
       <td valign="top" class="specbundle"><div class="contentEditableContainer contentTextEditable">
                                       <div class="contentEditable" align='center'>
                                         <p  style='text-align:left;color:#CCCCCC;font-size:12px;font-weight:normal;line-height:20px;'>
-                                          <span style='font-weight:bold;'>TF group Limited</span>
+                                          <span style='font-weight:bold;'>TF Group Limited</span>
                                           <br>
-                                          24A William Pickering DrRosedale, Auckland 0632<br/>
+                                          24A William Pickering Dr, Rosedale Auckland 0632<br/>
                                           PHONE: 09-914 7595
                                           <br>
                                         </p>

@@ -37,7 +37,8 @@ class Warranty extends Model
         "invoice_number",
         "vehicle_registration",
         "vehicle_make",
-        "vehicle_model"
+        "vehicle_model",
+        "created_at"
     ];
 
     /**
@@ -69,8 +70,19 @@ class Warranty extends Model
      * @var array
      */
     protected $hidden = [
-        "created_at",
         "id",
         "updated_at"
     ];
+
+    /**
+     * Get warranty's created date.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    function getCreatedAtAttribute($value){
+
+        return Carbon::parse($value)->format('d F Y');
+
+    }
 }

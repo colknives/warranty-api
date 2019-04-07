@@ -36,15 +36,22 @@ class WelcomeMail extends Mailable
     protected $productType = '';
 
     /**
+     * Serial Number of receiver
+     *
+     */
+    protected $serialNumber = '';
+
+    /**
      * Create a new message instance.
      * @param String $code
      * @return void
      */
-    public function __construct($name, $claim, $productType)
+    public function __construct($name, $claim, $productType, $serialNumber)
     {
         $this->name = $name;
         $this->claim = $claim;
         $this->productType = $productType;
+        $this->serialNumber = $serialNumber;
     }
 
     /**
@@ -57,9 +64,10 @@ class WelcomeMail extends Mailable
         return $this->subject('Thank you for Registering your Product')
                     ->view('mail.welcome')
                     ->with([
-                        'name' => $this->name,
+                        'name' => ucwords($this->name),
                         'claim' => $this->claim,
-                        'productType' => $this->productType
+                        'productType' => $this->productType,
+                        'serialNumber' => $this->serialNumber
                     ]);
     }
 }
