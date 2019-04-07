@@ -11,7 +11,7 @@ return [
         ],
         "serial" => [
         	"exist" => "Serial number(s) :serial already exist",
-            "invalid" => "Invalid serial number(s) :serial"
+            "invalid" => "Invalid serial number(s) :serial",
         ],
         "type" => [
             "200" => "Serial successfully idetified",
@@ -20,7 +20,8 @@ return [
         "serial_email" => [
             "serial_number" => [
                 "200" => "Warranty successfully fetched",
-                "404" => "No warranty under serial number is found"
+                "404" => "No warranty under serial number is found",
+                "range_invalid" => "Invalid range format"
             ],
             "email" => [
                 "200" => "Warranty successfully fetched",
