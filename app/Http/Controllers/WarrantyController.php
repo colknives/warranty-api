@@ -450,7 +450,7 @@ class WarrantyController extends Controller
         // $search = $this->warrantyRepository->searchWarranty($type, $request->get('serial_email'));
         $searchZoho = $this->searchExist($type, $request->get('serial_email'));
 
-        if( !$this->checkRangeFormat($request->get('serial_email')) ){
+        if( ( !in_array($request->get('serial_email'), static::SAFE_SERIALS) ) && ( !$this->checkRangeFormat($request->get('serial_email')) ) ){
             return response()->json([
                 "message" => __("messages.warranty.serial_email.serial_number.range_invalid"),
                 "type" => $type,
