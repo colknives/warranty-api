@@ -419,6 +419,7 @@ class WarrantyController extends Controller
      */
     public function checkSerialEmail(Request $request)
     {
+        
         //Check if sent data is email or serial
         $validator = Validator::make($request->all(), [
             'serial_email' => 'email'
