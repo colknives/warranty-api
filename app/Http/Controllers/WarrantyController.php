@@ -226,6 +226,8 @@ class WarrantyController extends Controller
                 'Serial Number' => $request->get('serial_number'),
                 'Product Type' => $request->get('product_type'),
                 'Product Applied' => ( $request->get('product_applied') == 'Yes' )? 'Fabric Protection' : '',
+                'Purchase Date' => Carbon::now()->format('d/m/Y'),
+                'Date Registered' => Carbon::now()->format('d/m/Y'),
                 'Vehicle Registration' => $request->get('vehicle_registration'),
                 'Make' => $request->get('vehicle_make'),
                 'Model' => $request->get('vehicle_model'),
